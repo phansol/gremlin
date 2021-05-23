@@ -30,7 +30,6 @@ gremlin [-h] [-v VCF] [-n NORMAL_BAM] [-t TUMOR_BAM] [-r REFERENCE_FASTA]
 Required arguments:
 * ``-v`` List of structural variations in the form of CHR1/POS1/CHR2/POS2/SVTYPE/CT
          (SVTYPE: DEL|DUP|INV|TRA, CT: 3to3|3to5|5to3|5to5)
-* 
 * ``-n`` Normal bam (or cram)
 * ``-t`` Tumor bam (or cram)
 * ``-r`` Reference fasta (index should be [given_fasta].fai)
@@ -40,7 +39,9 @@ Required arguments:
 * ``-c`` Tumor cell fraction [default: 0.5]
 * ``-p`` Tumor genome ploidy [default: 2]
 * ``-w`` Whole-genome duplication status (wgd|no_wgd) [default: no_wgd]
-* ``-y`` Tumor tissue (Biliary|Bladder|Bone_SoftTissue|Breast|Cervix|CNS|Colon_Rectum|Esophagus|Head_Neck|Hematologic|Kideny|Liver|Lung|Ovary|Pancreas|Prostate|Skin|Stomach|Thyroid|Uterus) [default: Biliary] 
+* ``-y`` Tumor tissue (Biliary|Bladder|Bone_SoftTissue|Breast|Cervix|CNS|Colon_Rectum|Esophagus|
+         Head_Neck|Hematologic|Kideny|Liver|Lung|Ovary|Pancreas|Prostate|Skin|Stomach|Thyroid|Uterus) 
+         [default: Biliary] 
 
 ## Output
 ##### ``*.feature.dummies.pon.score``
