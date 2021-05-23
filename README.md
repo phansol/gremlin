@@ -5,8 +5,6 @@ Automatically refine somatic genomic rearrangements from whole-genome sequences 
 GREMLIN was trained and verified using >200k SVs from ~1,800 cancer whole-genomes obtained from the PCAWG and Lee et al. You can simply apply GREMLIN optimized for the PCAWG dataset or retrain the model with the curated SV calls from a small fraction of samples from your cohort.
 
 ## Table of contents
-=================
-
   * [Installation]
   * [Usage]
   * [Output file description]
@@ -63,9 +61,9 @@ Short inversion artifacts are a main source of false-positive SV calls, commonly
 
 The following command will estimate the fraction of short inversions among total read pairs using samtools. If your data has an exceptionally high fraction of short inversions, you will get a fail flag, and the refined list (GREMLIN’s output) may include many short inversion errors.
 ```
-Usage: 1_quality_check/samtools_short_inv.sh [TUMOR_BAM] [THREADS]
+Usage: 1_quality_check/samtools_short_inv.sh [TUMOR_BAM/CRAM] [THREADS]
 
-Output: [TUMOR_BAM].shinv.pass or [TUMOR_BAM].shinv.fail
+Output: [TUMOR_BAM/CRAM].shinv.pass or [TUMOR_BAM/CRAM].shinv.fail
 ```
 
 ### 2. Flag for variable sequencing coverage
@@ -74,8 +72,11 @@ Output: [TUMOR_BAM].shinv.pass or [TUMOR_BAM].shinv.fail
 Usage for bam: 1_quality_check/indexcov_read_depth.bam.sh [TUMOR_BAM] [NORMAL_BAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
 Usage for cram: 1_quality_check/indexcov_read_depth.cram.sh [TUMOR_CRAM] [NORMAL_CRAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
 
+[REFERENCE_BUILD]: 
+[REFERENCE_FASTA_INDEX]: /path/to/reference.fasta.fai
+
 Output: [TUMOR_BAM/CRAM].depth_ratio.png
-        [TUMOR_BAM/CRAM]..depth.pass or tumor.bam.depth.fail
+        [TUMOR_BAM/CRAM].depth.pass or [TUMOR_BAM/CRAM].depth.fail
 ```
 
 ## Formatting SV call sets
@@ -98,22 +99,22 @@ Output: [feature.dummies.pon.score].sv.gremlin.[threshold].vcf
 ## Retraining GREMLIN
 ### 1. Re-training with your data
 ```
-Usage: Rscript 5_postprocessing/optional_re_training.R <new_dataset> [OUTPUT_DIRECTORY] <prefix> <percent (optional)>
+Usage: Rscript 5_postprocessing/optional_re_training.R [NEW_DATASET] [OUTPUT_DIRECTORY] [PREFIX] [PERCENT]
 
-new_dataset: same format with *.feature.dummies.pon.score with an additional column (true_label = T/F)
-percent (optional): If given a value X (0-100), X% percent of the training set will be used for re-training. 
+[NEW_DATASET]: same format with *.feature.dummies.pon.score with an additional column (true_label = T/F)
+[PERCENT] (optional): If given a value X (0-100), X% percent of the training set will be used for re-training. 
 		   Otherwise, 160 training samples will be used.
 
-Output: [OUTPUT_DIRECTORY]/prefix_gbm.fit.rds
+Output: [OUTPUT_DIRECTORY]/[PREFIX]_gbm.fit.rds
 ```
 ### 2. Applying the re-trained model to your data
 ```
-Usage: Rscript 5_postprocessing/optional_apply_re_trained.R [feature.dummies.pon.score] [re_trained_gbm.fit.rds] <threshold (optional)>
+Usage: Rscript 5_postprocessing/optional_apply_re_trained.R [feature.dummies.pon.score] [re_trained_gbm.fit.rds] [THRESHOLD]
 
-threshold (optional): used for filtering vcf, value between (0, 1).
+[THRESHOLD] (optional): used for filtering vcf, value between (0, 1).
 
 Output: [feature.dummies.pon.score].re_trained
-	  *.sv.re_trained.threshold.vcf (if threshold is given)
+	  *.sv.re_trained.[THRESHOLD].vcf (if threshold is given)
 ```
 
 ## License
