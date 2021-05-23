@@ -22,6 +22,11 @@ Rscript install_R_requirements.R
 pip install -r requirements.txt
 ```
 
+## Test run
+```
+gremlin -v test/sv.vcf.sort -n test/normal.chr21.bam -t test/tumor.chr21.bam -r test/grch37.chr21.fasta
+```
+
 ## Usage
 ```
 gremlin [-h] [-v VCF] [-n NORMAL_BAM] [-t TUMOR_BAM] [-r REFERENCE_FASTA]
@@ -40,9 +45,7 @@ Required arguments:
 * ``-c`` Tumor cell fraction [default: 0.5]
 * ``-p`` Tumor genome ploidy [default: 2]
 * ``-w`` Whole-genome duplication status (wgd|no_wgd) [default: no_wgd]
-* ``-y`` Tumor tissue (Biliary|Bladder|Bone_SoftTissue|Breast|Cervix|CNS|Colon_Rectum|Esophagus|
-*        Head_Neck|Hematologic|Kideny|Liver|Lung|Ovary|Pancreas|Prostate|Skin|Stomach|Thyroid|Uterus) 
-*        [default: Biliary] 
+* ``-y`` Tumor tissue (Biliary|Bladder|Bone_SoftTissue|Breast|Cervix|CNS|Colon_Rectum|Esophagus|Head_Neck|Hematologic|Kideny|Liver|Lung|Ovary|Pancreas|Prostate|Skin|Stomach|Thyroid|Uterus) [default: Biliary] 
 
 ## Output
 ##### ``*.feature.dummies.pon.score``
@@ -68,19 +71,49 @@ Output: [TUMOR_BAM].shinv.pass or [TUMOR_BAM].shinv.fail
 ### 2. Flag for variable sequencing coverage
 
 ```
-Usage for bam files: 1_quality_check/indexcov_read_depth.bam.sh [TUMOR_BAM] [NORMAL_BAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
-Usage for cram files: 1_quality_check/indexcov_read_depth.cram.sh [TUMOR_CRAM] [NORMAL_CRAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
+Usage for bam: 1_quality_check/indexcov_read_depth.bam.sh [TUMOR_BAM] [NORMAL_BAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
+Usage for cram: 1_quality_check/indexcov_read_depth.cram.sh [TUMOR_CRAM] [NORMAL_CRAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
+
+Output: [TUMOR_BAM/CRAM].depth_ratio.png
+        [TUMOR_BAM/CRAM]..depth.pass or tumor.bam.depth.fail
 ```
 
-## Adjusting threshold
-change threshold
+## Formatting SV call sets
+
+## Cohort-specific panel of normals 
+
+
+## Adjusting classification threshold
+You can adjust filtering threshold (default is 0.89 for tier1 and 0.57 for tier2)
+```
+Usage: Rscript 5_postprocessing/optional_adjusting_classification_threshold.R [feature.dummies.pon.score] [threshold]
+
+[feature.dummies.pon.score]: 
+[threshold]: 
+
+Output: [feature.dummies.pon.score].sv.gremlin.[threshold].vcf
+```
+
 
 ## Retraining GREMLIN
-
-## Test run
-# 1. 
+### 1. Re-training with your data
 ```
-gremlin -v test/sv.vcf.sort -n test/normal.chr21.bam -t test/tumor.chr21.bam -r test/grch37.chr21.fasta
+Usage: Rscript 5_postprocessing/optional_re_training.R <new_dataset> [OUTPUT_DIRECTORY] <prefix> <percent (optional)>
+
+new_dataset: same format with *.feature.dummies.pon.score with an additional column (true_label = T/F)
+percent (optional): If given a value X (0-100), X% percent of the training set will be used for re-training. 
+		   Otherwise, 160 training samples will be used.
+
+Output: [OUTPUT_DIRECTORY]/prefix_gbm.fit.rds
+```
+### 2. Applying the re-trained model to your data
+```
+Usage: Rscript 5_postprocessing/optional_apply_re_trained.R [feature.dummies.pon.score] [re_trained_gbm.fit.rds] <threshold (optional)>
+
+threshold (optional): used for filtering vcf, value between (0, 1).
+
+Output: [feature.dummies.pon.score].re_trained
+	  *.sv.re_trained.threshold.vcf (if threshold is given)
 ```
 
 ## License
