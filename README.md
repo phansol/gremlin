@@ -14,12 +14,13 @@ Table of contents
   * [Retraining GREMLIN]
 
 ## Installation
-
+```
 git clone https://github.com/phansol/gremlin/gremlin.git
 cd gremlin
 
 Rscript install_R_requirements.R
 pip install -r requirements.txt
+```
 
 ## Usage
 ```
@@ -45,22 +46,41 @@ Required arguments:
 
 ## Output
 ##### ``*.feature.dummies.pon.score``
-feature annotated vcf
+scored SV call set
 
 ##### ``*.sv.gremlin.tier1.vcf``
-GREMLIN 
+tier1 SV calls predicted to be true somatic mutations by GREMLIN
 
 ##### ``*.sv.gremlin.tier2.vcf``
+tier2 SV calls refined with more lenient filtering threshold than tier1
 
+## Quality control of input sequencing data
+# 1. Flag for short inversion artifacts
+Short inversion artifacts are a main source of false-positive SV calls, commonly seen in whole-genome sequences of low-quality genomic DNA. Thus, we recommend checking the fraction of short inversions in your sequencing data before applying GREMLIN. 
 
-## Test run
+The following command will estimate the fraction of short inversions among total read pairs using samtools. If your data has an exceptionally high fraction of short inversions, you will get a fail flag, and the refined list (GREMLIN’s output) may include many short inversion errors.
 ```
-gremlin -v test/sv.vcf.sort -n test/normal.chr21.bam -t test/tumor.chr21.bam -r test/grch37.chr21.fasta
+Usage: 1_quality_check/samtools_short_inv.sh [TUMOR_BAM] [THREADS]
+
+Output: [TUMOR_BAM].shinv.pass or [TUMOR_BAM].shinv.fail
+```
+
+# 2. Flag for variable sequencing coverage
+
+```
+Usage for bam files: 1_quality_check/indexcov_read_depth.bam.sh [TUMOR_BAM] [NORMAL_BAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
+Usage for cram files: 1_quality_check/indexcov_read_depth.cram.sh [TUMOR_CRAM] [NORMAL_CRAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
 ```
 
 ## Adjusting threshold
 change threshold
 
 ## Retraining GREMLIN
+
+## Test run
+# 1. 
+```
+gremlin -v test/sv.vcf.sort -n test/normal.chr21.bam -t test/tumor.chr21.bam -r test/grch37.chr21.fasta
+```
 
 ## License
