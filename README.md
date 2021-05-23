@@ -72,12 +72,11 @@ Output: [TUMOR_BAM/CRAM].shinv.pass or [TUMOR_BAM/CRAM].shinv.fail
 Usage for bam: 1_quality_check/indexcov_read_depth.bam.sh [TUMOR_BAM] [NORMAL_BAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
 Usage for cram: 1_quality_check/indexcov_read_depth.cram.sh [TUMOR_CRAM] [NORMAL_CRAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
 
-[REFERENCE_BUILD]: 
-[REFERENCE_FASTA_INDEX]: /path/to/reference.fasta.fai
-
 Output: [TUMOR_BAM/CRAM].depth_ratio.png
         [TUMOR_BAM/CRAM].depth.pass or [TUMOR_BAM/CRAM].depth.fail
 ```
+* ``REFERENCE_BUILD`` Reference genome version (19|38)
+* ``REFERENCE_FASTA_INDEX`` /path/to/reference.fasta.fai
 
 ## Formatting SV call sets
 
@@ -87,34 +86,31 @@ Output: [TUMOR_BAM/CRAM].depth_ratio.png
 ## Adjusting classification threshold
 You can adjust filtering threshold (default is 0.89 for tier1 and 0.57 for tier2)
 ```
-Usage: Rscript 5_postprocessing/optional_adjusting_classification_threshold.R [feature.dummies.pon.score] [threshold]
+Usage: Rscript 5_postprocessing/optional_adjusting_classification_threshold.R [OUTPUT] [THRESHOLD]
 
-[feature.dummies.pon.score]: 
-[threshold]: 
-
-Output: [feature.dummies.pon.score].sv.gremlin.[threshold].vcf
+Output: [OUTPUT].sv.gremlin.[THRESHOLD].vcf
 ```
-
+* ``OUTPUT`` feature.dummies.pon.score
+* ``THRESHOLD`` 
 
 ## Retraining GREMLIN
 ### 1. Re-training with your data
 ```
 Usage: Rscript 5_postprocessing/optional_re_training.R [NEW_DATASET] [OUTPUT_DIRECTORY] [PREFIX] [PERCENT]
 
-[NEW_DATASET]: same format with *.feature.dummies.pon.score with an additional column (true_label = T/F)
-[PERCENT] (optional): If given a value X (0-100), X% percent of the training set will be used for re-training. 
-		   Otherwise, 160 training samples will be used.
-
 Output: [OUTPUT_DIRECTORY]/[PREFIX]_gbm.fit.rds
 ```
+* ``NEW_DATASET`` same format with ``feature.dummies.pon.score`` with an additional column (true_label = T/F)
+* ``PERCENT`` (optional): If given a value X (0-100), X% percent of the training set will be used for re-training. 
+		   Otherwise, 160 training samples will be used.
 ### 2. Applying the re-trained model to your data
 ```
-Usage: Rscript 5_postprocessing/optional_apply_re_trained.R [feature.dummies.pon.score] [re_trained_gbm.fit.rds] [THRESHOLD]
+Usage: Rscript 5_postprocessing/optional_apply_re_trained.R [OUTPUT] [re_trained_gbm.fit.rds] [THRESHOLD]
 
-[THRESHOLD] (optional): used for filtering vcf, value between (0, 1).
-
-Output: [feature.dummies.pon.score].re_trained
-	  *.sv.re_trained.[THRESHOLD].vcf (if threshold is given)
+Output: [OUTPUT].re_trained
+	[OUTPUT].re_trained.[THRESHOLD].vcf (if threshold is given)
 ```
+* ``OUTPUT`` feature.dummies.pon.score
+* ``THRESHOLD`` (optional) used for filtering vcf, value between (0, 1).
 
 ## License
