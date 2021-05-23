@@ -4,7 +4,7 @@ Automatically refine somatic genomic rearrangements from whole-genome sequences 
 
 GREMLIN was trained and verified using >200k SVs from ~1,800 cancer whole-genomes obtained from the PCAWG and Lee et al. You can simply apply GREMLIN optimized for the PCAWG dataset or retrain the model with the curated SV calls from a small fraction of samples from your cohort.
 
-Table of contents
+## Table of contents
 =================
 
   * [Installation]
@@ -41,8 +41,8 @@ Required arguments:
 * ``-p`` Tumor genome ploidy [default: 2]
 * ``-w`` Whole-genome duplication status (wgd|no_wgd) [default: no_wgd]
 * ``-y`` Tumor tissue (Biliary|Bladder|Bone_SoftTissue|Breast|Cervix|CNS|Colon_Rectum|Esophagus|
-         Head_Neck|Hematologic|Kideny|Liver|Lung|Ovary|Pancreas|Prostate|Skin|Stomach|Thyroid|Uterus) 
-         [default: Biliary] 
+*        Head_Neck|Hematologic|Kideny|Liver|Lung|Ovary|Pancreas|Prostate|Skin|Stomach|Thyroid|Uterus) 
+*        [default: Biliary] 
 
 ## Output
 ##### ``*.feature.dummies.pon.score``
@@ -55,7 +55,7 @@ tier1 SV calls predicted to be true somatic mutations by GREMLIN
 tier2 SV calls refined with more lenient filtering threshold than tier1
 
 ## Quality control of input sequencing data
-# 1. Flag for short inversion artifacts
+### 1. Flag for short inversion artifacts
 Short inversion artifacts are a main source of false-positive SV calls, commonly seen in whole-genome sequences of low-quality genomic DNA. Thus, we recommend checking the fraction of short inversions in your sequencing data before applying GREMLIN. 
 
 The following command will estimate the fraction of short inversions among total read pairs using samtools. If your data has an exceptionally high fraction of short inversions, you will get a fail flag, and the refined list (GREMLIN’s output) may include many short inversion errors.
@@ -65,7 +65,7 @@ Usage: 1_quality_check/samtools_short_inv.sh [TUMOR_BAM] [THREADS]
 Output: [TUMOR_BAM].shinv.pass or [TUMOR_BAM].shinv.fail
 ```
 
-# 2. Flag for variable sequencing coverage
+### 2. Flag for variable sequencing coverage
 
 ```
 Usage for bam files: 1_quality_check/indexcov_read_depth.bam.sh [TUMOR_BAM] [NORMAL_BAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
