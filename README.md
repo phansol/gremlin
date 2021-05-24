@@ -32,8 +32,7 @@ gremlin [-h] [-v VCF] [-n NORMAL_BAM] [-t TUMOR_BAM] [-r REFERENCE_FASTA]
         [-c TUMOR_CELL_FRACTION] [-p TUMOR_PLOIDY] [-w WGD_STATUS] [-y TUMOR_TISSUE]
 ```
 Required arguments:
-* ``-v`` List of structural variations in the form of CHR1/POS1/CHR2/POS2/SVTYPE/CT
-         (SVTYPE: DEL|DUP|INV|TRA, CT: 3to3|3to5|5to3|5to5)
+* ``-v`` Structural variation call set (tab-delimited; with a header CHR1 POS1 CHR2 POS2 SVTYPE CT<br>(SVTYPE: DEL|DUP|INV|TRA, CT: 3to3|3to5|5to3|5to5)
 * ``-n`` Normal bam (or cram)
 * ``-t`` Tumor bam (or cram)
 * ``-r`` Reference fasta (index should be [given_fasta].fai)
@@ -43,7 +42,7 @@ Required arguments:
 * ``-c`` Tumor cell fraction [default: 0.5]
 * ``-p`` Tumor genome ploidy [default: 2]
 * ``-w`` Whole-genome duplication status (wgd|no_wgd) [default: no_wgd]
-* ``-y`` Tumor tissue (Biliary|Bladder|Bone_SoftTissue|Breast|Cervix|CNS|Colon_Rectum|Esophagus|Head_Neck|Hematologic|Kideny|Liver|Lung|Ovary|Pancreas|Prostate|Skin|Stomach|Thyroid|Uterus) [default: Biliary] 
+* ``-y`` Tumor tissue (Biliary|Bladder|Bone_SoftTissue|Breast|Cervix|CNS|Colon_Rectum|Esophagus|Head_Neck|<br>Hematologic|Kideny|Liver|Lung|Ovary|Pancreas|Prostate|Skin|Stomach|Thyroid|Uterus) [default: Biliary] 
 
 ## Output
 * ``*.feature.dummies.pon.score``: scored SV call set
@@ -52,8 +51,16 @@ Required arguments:
 
 * ``*.sv.gremlin.tier2.vcf``: tier2 SV calls refined with more lenient filtering threshold than tier1
 
-## Quality control of input sequencing data
-Before checking the quality of input data, install required packages using `Rscript requirements.qc.R`
+## Best practice
+|Step|Description|
+|:--:|--|
+|1|*(Optional)* Quality control of input sequences|
+|2|Preprocessing of input SV call sets|
+|3|Applying GREMLIN|
+|4|*(Optional)* Adjusting classification threshold<br>Retraining GREMLIN<br>Additional filtering using normal panels of your cohort|
+
+## Quality control of input sequences
+Before checking the quality of input sequencing data, install required packages using `Rscript requirements.qc.R`
 
 #### 1. Flag for short inversion artifacts
 Short inversion artifacts are a main source of false-positive SV calls, commonly seen in whole-genome sequences of low-quality genomic DNA. Thus, we recommend checking the fraction of short inversions in your sequencing data before applying GREMLIN. 
@@ -74,12 +81,24 @@ Usage for cram: 1_quality_check/indexcov_read_depth.cram.sh [TUMOR_CRAM] [NORMAL
 Output: [TUMOR_BAM/CRAM].depth_ratio.png
         [TUMOR_BAM/CRAM].depth.pass or [TUMOR_BAM/CRAM].depth.fail
 ```
-* ``REFERENCE_BUILD`` reference genome version (19|38)
-* ``REFERENCE_FASTA_INDEX`` /path/to/reference.fasta.fai
+* ``REFERENCE_BUILD``: reference genome version (19|38)
+* ``REFERENCE_FASTA_INDEX``: /path/to/reference.fasta.fai
 
-## Formatting SV call sets
 
-## Cohort-specific panel of normals 
+## Preprocessing of input SV call sets
+Formatting SV call sets
+
+If you called SVs using DELLY, SvABA, BRASS, or dRanger, run the following command.
+```
+Usage: Rscript 2_preprocessing/vcf_formatting.R [VCF] [CALLER] [REFERENCE_FASTA_INDEX] [OUTPUT_DIRECTORY]
+
+Output: [OUTPUT_DIRECTORY]/[VCF].sort
+```
+* ``VCF``: 
+* ``CALLER``: 
+
+Otherwise, transform your SV call set into the ...
+
 
 
 ## Adjusting classification threshold
@@ -89,8 +108,8 @@ Usage: Rscript 5_postprocessing/optional_adjusting_classification_threshold.R [O
 
 Output: [OUTPUT].sv.gremlin.[THRESHOLD].vcf
 ```
-* ``OUTPUT`` feature.dummies.pon.score
-* ``THRESHOLD`` 
+* ``OUTPUT``: feature.dummies.pon.score
+* ``THRESHOLD``: classification threshold between 0 and 1 
 
 ## Retraining GREMLIN
 Before retraining the model, install required packages using `Rscript requirements.rt.R`
@@ -101,9 +120,10 @@ Usage: Rscript 5_postprocessing/optional_re_training.R [NEW_DATASET] [OUTPUT_DIR
 
 Output: [OUTPUT_DIRECTORY]/[PREFIX]_gbm.fit.rds
 ```
-* ``NEW_DATASET`` same format with ``feature.dummies.pon.score`` with an additional column (true_label = T/F)
-* ``PERCENT`` (optional): If given a value X (0-100), X% percent of the training set will be used for re-training. 
-		   Otherwise, 160 training samples will be used.
+* ``NEW_DATASET``: same format with ``feature.dummies.pon.score`` with an additional column (true_label = T/F)
+* ``PERCENT``: (optional) the percent of the training set will be used for re-training; value between 0 and 100
+	                  160 training samples will be used in default
+	       
 #### 2. Applying the re-trained model to your data
 ```
 Usage: Rscript 5_postprocessing/optional_apply_re_trained.R [OUTPUT] [re_trained_gbm.fit.rds] [THRESHOLD]
@@ -111,7 +131,10 @@ Usage: Rscript 5_postprocessing/optional_apply_re_trained.R [OUTPUT] [re_trained
 Output: [OUTPUT].re_trained
 	[OUTPUT].re_trained.[THRESHOLD].vcf (if threshold is given)
 ```
-* ``OUTPUT`` feature.dummies.pon.score
-* ``THRESHOLD`` (optional) used for filtering vcf, value between (0, 1).
+* ``OUTPUT``: feature.dummies.pon.score
+* ``THRESHOLD``: (optional) used for filtering vcf; value between 0 and 1
+
+## Additional filtering using normal panels of your cohort
+Cohort-specific panel of normals 
 
 ## License
