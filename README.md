@@ -16,7 +16,7 @@ GREMLIN was trained and verified using >200k SVs from ~1,800 cancer whole-genome
 git clone https://github.com/phansol/gremlin/gremlin.git
 cd gremlin
 
-Rscript install_R_requirements.R
+Rscript requirements.R
 pip install -r requirements.txt
 ```
 
@@ -46,17 +46,16 @@ Required arguments:
 * ``-y`` Tumor tissue (Biliary|Bladder|Bone_SoftTissue|Breast|Cervix|CNS|Colon_Rectum|Esophagus|Head_Neck|Hematologic|Kideny|Liver|Lung|Ovary|Pancreas|Prostate|Skin|Stomach|Thyroid|Uterus) [default: Biliary] 
 
 ## Output
-##### ``*.feature.dummies.pon.score``
-scored SV call set
+* ``*.feature.dummies.pon.score``: scored SV call set
 
-##### ``*.sv.gremlin.tier1.vcf``
-tier1 SV calls predicted to be true somatic mutations by GREMLIN
+* ``*.sv.gremlin.tier1.vcf``: tier1 SV calls predicted to be true somatic mutations by GREMLIN
 
-##### ``*.sv.gremlin.tier2.vcf``
-tier2 SV calls refined with more lenient filtering threshold than tier1
+* ``*.sv.gremlin.tier2.vcf``: tier2 SV calls refined with more lenient filtering threshold than tier1
 
 ## Quality control of input sequencing data
-### 1. Flag for short inversion artifacts
+Before checking the quality of input data, install required packages using `Rscript requirements.qc.R`
+
+#### 1. Flag for short inversion artifacts
 Short inversion artifacts are a main source of false-positive SV calls, commonly seen in whole-genome sequences of low-quality genomic DNA. Thus, we recommend checking the fraction of short inversions in your sequencing data before applying GREMLIN. 
 
 The following command will estimate the fraction of short inversions among total read pairs using samtools. If your data has an exceptionally high fraction of short inversions, you will get a fail flag, and the refined list (GREMLIN’s output) may include many short inversion errors.
@@ -66,7 +65,7 @@ Usage: 1_quality_check/samtools_short_inv.sh [TUMOR_BAM/CRAM] [THREADS]
 Output: [TUMOR_BAM/CRAM].shinv.pass or [TUMOR_BAM/CRAM].shinv.fail
 ```
 
-### 2. Flag for variable sequencing coverage
+#### 2. Flag for variable sequencing coverage
 
 ```
 Usage for bam: 1_quality_check/indexcov_read_depth.bam.sh [TUMOR_BAM] [NORMAL_BAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
@@ -75,7 +74,7 @@ Usage for cram: 1_quality_check/indexcov_read_depth.cram.sh [TUMOR_CRAM] [NORMAL
 Output: [TUMOR_BAM/CRAM].depth_ratio.png
         [TUMOR_BAM/CRAM].depth.pass or [TUMOR_BAM/CRAM].depth.fail
 ```
-* ``REFERENCE_BUILD`` Reference genome version (19|38)
+* ``REFERENCE_BUILD`` reference genome version (19|38)
 * ``REFERENCE_FASTA_INDEX`` /path/to/reference.fasta.fai
 
 ## Formatting SV call sets
@@ -94,7 +93,9 @@ Output: [OUTPUT].sv.gremlin.[THRESHOLD].vcf
 * ``THRESHOLD`` 
 
 ## Retraining GREMLIN
-### 1. Re-training with your data
+Before retraining the model, install required packages using `Rscript requirements.rt.R`
+
+#### 1. Re-training with your data
 ```
 Usage: Rscript 5_postprocessing/optional_re_training.R [NEW_DATASET] [OUTPUT_DIRECTORY] [PREFIX] [PERCENT]
 
@@ -103,7 +104,7 @@ Output: [OUTPUT_DIRECTORY]/[PREFIX]_gbm.fit.rds
 * ``NEW_DATASET`` same format with ``feature.dummies.pon.score`` with an additional column (true_label = T/F)
 * ``PERCENT`` (optional): If given a value X (0-100), X% percent of the training set will be used for re-training. 
 		   Otherwise, 160 training samples will be used.
-### 2. Applying the re-trained model to your data
+#### 2. Applying the re-trained model to your data
 ```
 Usage: Rscript 5_postprocessing/optional_apply_re_trained.R [OUTPUT] [re_trained_gbm.fit.rds] [THRESHOLD]
 
