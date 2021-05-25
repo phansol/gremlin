@@ -143,16 +143,16 @@ Output: [OUTPUT].re_trained
 
 ## Additional filtering using normal panels of your cohort
 First, generate a cohort-specific panel of normals (PoN) satisfying the following conditions.
-* Column order should be **CHR1 POS1 CHR2 POS2 CT SVTYPE SAMPLE_ID**
+* Column order should be (1) CHR1, (2) POS1, (3) CHR2, (4) POS2, (5) CT, (6) SVTYPE, and (7) SAMPLE_ID
 * Each line should be sorted as CHR1 <= CHR2 and POS1 <= POS2
 * Tab-separated without column names
 
 For example, 
 ```
-2	648899	5	1238794	3to5	DEL	sample_id_1
+2	648899	2	1238794	3to5	DEL	sample_id_1
 5	6876412	5	7425230	3to5	DEL	sample_id_1
-11	4373522	11	4588301	3to3	INV	sample_id_2
-12	75212	22	1215465	5to3	DUP	sample_id_3
+7	1215465	22	75212	5to3	TRA	sample_id_2
+11	4373522	11	4588301	5to5	INV	sample_id_3
 ```
 Second, annotate the PoN using the following command.
 ```
