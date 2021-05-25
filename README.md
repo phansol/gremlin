@@ -42,7 +42,7 @@ gremlin [-h] [-v VCF] [-n NORMAL_BAM] [-t TUMOR_BAM] [-r REFERENCE_FASTA]
 * ``-c`` Tumor cell fraction [default: 0.5]
 * ``-p`` Tumor genome ploidy [default: 2]
 * ``-w`` Whole-genome duplication status (wgd|no_wgd) [default: no_wgd]
-* ``-y`` Tumor tissue (Biliary|Bladder|Bone_SoftTissue|Breast|Cervix|CNS|Colon_Rectum|Esophagus|Head_Neck|<br>Hematologic|Kideny|Liver|Lung|Ovary|Pancreas|Prostate|Skin|Stomach|Thyroid|Uterus) [default: Biliary] 
+* ``-y`` Tumor tissue (Biliary|Bladder|Bone_SoftTissue|Breast|Cervix|CNS|Colon_Rectum|Esophagus|Head_Neck|<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hematologic|Kideny|Liver|Lung|Ovary|Pancreas|Prostate|Skin|Stomach|Thyroid|Uterus) [default: Biliary] 
 
 #### Output
 * ``*.feature.dummies.pon.score``: scored SV call set
@@ -142,6 +142,40 @@ Output: [OUTPUT].re_trained
 * ``THRESHOLD`` *(Optional)* Classification threshold (between 0 and 1)
 
 ## Additional filtering using normal panels of your cohort
+```
+Usage: Rscript 5_postprocessing/optional_cohort_specific_pon_annotation.R [OUTPUT] [PON] [COHORT_ID]
+
+Output: [OUTPUT].pon_[COHORT_ID]
+```
+#### Arguments:
+* ``OUTPUT`` GREMLIN's output (\*.feature.dummies.pon.score)
+* ``PON`` Your panel of normal data satisfying the following conditions
+&nbsp;&nbsp;&nbsp;&nbsp; * Column order should be (1) CHR1, (2) POS1, (3) CHR2, (4) POS2, (5) CT, (6) SVTYPE, and (7) SAMPLE_ID
+&nbsp;&nbsp;&nbsp;&nbsp; * Each line should be sorted as CHR1 <= CHR2 and POS1 <= POS2
+&nbsp;&nbsp;&nbsp;&nbsp; * Tab-separated without column names
+&nbsp;&nbsp;&nbsp;&nbsp; For example,
+```
+2	648899	2	1238794	3to5	DEL	sample_id_1
+5	6876412	5	7425230	3to5	DEL	sample_id_1
+7	1215465	22	75212	5to3	TRA	sample_id_2
+11	4373522	11	4588301	5to5	INV	sample_id_3
+```
+* ``COHORT_ID`` Used for the column name of your PoN "normal_panel_\[COHORT_ID]"
+
+
+
+#### First, generate a cohort-specific panel of normals (PoN) satisfying the following conditions.
+
+For example, 
+```
+2	648899	2	1238794	3to5	DEL	sample_id_1
+5	6876412	5	7425230	3to5	DEL	sample_id_1
+7	1215465	22	75212	5to3	TRA	sample_id_2
+11	4373522	11	4588301	5to5	INV	sample_id_3
+```
+#### Second, annotate the PoN using the following command. Then, perform additional filtering using the PoN column.
+
+
 #### First, generate a cohort-specific panel of normals (PoN) satisfying the following conditions.
 * Column order should be (1) CHR1, (2) POS1, (3) CHR2, (4) POS2, (5) CT, (6) SVTYPE, and (7) SAMPLE_ID
 * Each line should be sorted as CHR1 <= CHR2 and POS1 <= POS2
@@ -164,6 +198,4 @@ Output: [OUTPUT].pon_[COHORT_ID]
 * ``OUTPUT`` GREMLIN's output (\*.feature.dummies.pon.score)
 * ``PON`` Your panel of normal dataset (generated in the step 1)
 * ``COHORT_ID`` Used for the column name of your PoN "normal_panel_\[COHORT_ID]"
-
-
 ## License
