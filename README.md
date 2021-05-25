@@ -2,14 +2,7 @@
 
 Automatically refine somatic genomic rearrangements from whole-genome sequences of tumor and matched normal tissues. GREMLIN takes a SV call set as an input and extracts features from the whole-genome bam (or cram). Then, it scores each of the calls and outputs a refined SV list.
 
-GREMLIN was trained and verified using >200k SVs from ~1,800 cancer whole-genomes obtained from the PCAWG and Lee et al. You can simply apply GREMLIN optimized for the PCAWG dataset or retrain the model with the curated SV calls from a small fraction of samples from your cohort.
-
-## Table of contents
-  * [Installation]
-  * [Usage]
-  * [Output file description]
-  * [Adjusting threshold]
-  * [Retraining GREMLIN]
+GREMLIN was trained and verified using >200k SVs from ~1,800 cancer whole-genomes obtained from the [PCAWG](https://www.nature.com/articles/s41586-019-1913-9) and [Lee et al.](https://www.sciencedirect.com/science/article/pii/S0092867419305112) You can simply apply GREMLIN optimized for the PCAWG dataset or retrain the model with the curated SV calls from a small fraction of samples from your cohort.
 
 ## Installation
 ```
@@ -54,7 +47,7 @@ Required arguments:
 ## Best practice
 |Step|Description|
 |:--:|--|
-|1|*(Optional)* Quality control of input sequences|
+|1|*(Optional)* [Quality control of input sequences](https://github.com/phansol/gremlin/#quality)|
 |2|Preprocessing of input SV call sets|
 |3|Applying GREMLIN|
 |4|*(Optional)* Adjusting classification threshold<br>Retraining GREMLIN<br>Additional filtering using normal panels of your cohort|
@@ -99,7 +92,7 @@ Output: [OUTPUT_DIRECTORY]/[VCF].sort
 
 Otherwise, transform your SV call set into the ...
 
-
+tab-separated 
 
 ## Adjusting classification threshold
 You can adjust filtering threshold (default is 0.89 for tier1 and 0.57 for tier2)
