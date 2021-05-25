@@ -7,11 +7,11 @@ GREMLIN was trained and verified using >200k SVs from ~1,800 cancer whole-genome
 ## Installation
 To implement GREMLIN, python (v3.6.6), R (v3.6.0), and bedtools (v2.25.0) are required.
 
-#### Install from Bioconda
+### Install from Bioconda
 ```
 conda install -c bioconda gremlin
 ```
-#### Install from GitHub
+### Install from GitHub
 ```
 git clone https://github.com/phansol/gremlin/gremlin.git
 cd gremlin
@@ -31,7 +31,7 @@ gremlin [-h] [-v VCF] [-n NORMAL_BAM] [-t TUMOR_BAM] [-r REFERENCE_FASTA]
         [-i SAMPLE_ID] [-o OUTPUT_DIRECTORY] [-g REFERENCE_VERSION]
         [-c TUMOR_CELL_FRACTION] [-p TUMOR_PLOIDY] [-w WGD_STATUS] [-y TUMOR_TISSUE]
 ```
-Required arguments:
+#### Required arguments:
 * ``-v`` Structural variation call set (tab-delimited; with a header CHR1 POS1 CHR2 POS2 SVTYPE CT<br>(SVTYPE: DEL|DUP|INV|TRA, CT: 3to3|3to5|5to3|5to5)
 * ``-n`` Normal bam (or cram)
 * ``-t`` Tumor bam (or cram)
@@ -44,7 +44,7 @@ Required arguments:
 * ``-w`` Whole-genome duplication status (wgd|no_wgd) [default: no_wgd]
 * ``-y`` Tumor tissue (Biliary|Bladder|Bone_SoftTissue|Breast|Cervix|CNS|Colon_Rectum|Esophagus|Head_Neck|<br>Hematologic|Kideny|Liver|Lung|Ovary|Pancreas|Prostate|Skin|Stomach|Thyroid|Uterus) [default: Biliary] 
 
-## Output
+#### Output
 * ``*.feature.dummies.pon.score``: scored SV call set
 
 * ``*.sv.gremlin.tier1.vcf``: tier1 SV calls predicted to be true somatic mutations by GREMLIN
@@ -60,11 +60,11 @@ Required arguments:
 |4|*(Optional)* [Adjusting classification threshold](#adjusting-classification-threshold)<br>[Retraining GREMLIN](#retraining-gremlin)<br>[Additional filtering using normal panels of your cohort](#additional-filtering-using-normal-panels-of-your-cohort)|
 
 ## Quality control of input sequences
-Before checking the quality of input sequencing data, install required packages using `Rscript requirements.qc.R`
+Short inversion artifacts and artificial fluctuations in sequencing coverage are major sources of false-positive SV calls, commonly seen in whole-genome sequences of low-quality genomic DNA. Thus, we recommend checking your sequencing data as follows before applying GREMLIN. 
 
-#### Flag for short inversion artifacts
-Short inversion artifacts are a main source of false-positive SV calls, commonly seen in whole-genome sequences of low-quality genomic DNA. Thus, we recommend checking the fraction of short inversions in your sequencing data before applying GREMLIN. 
+Before running the following commands, install required packages using `Rscript requirements.qc.R`
 
+### Flag for short inversion artifacts
 The following command will estimate the fraction of short inversions among total read pairs using samtools. If your data has an exceptionally high fraction of short inversions, you will get a fail flag, and the refined list (GREMLIN’s output) may include many short inversion errors.
 ```
 Usage: 1_quality_check/samtools_short_inv.sh [TUMOR_BAM/CRAM] [THREADS]
@@ -72,8 +72,8 @@ Usage: 1_quality_check/samtools_short_inv.sh [TUMOR_BAM/CRAM] [THREADS]
 Output: [TUMOR_BAM/CRAM].shinv.pass or [TUMOR_BAM/CRAM].shinv.fail
 ```
 
-#### Flag for variable sequencing coverage
-
+### Flag for variable sequencing coverage
+The artificial fluctuations in the sequencing coverage can be estimated as follows. The number of aligned reads across the genome will be inferred by [indexcov](https://github.com/brentp/goleft/tree/master/indexcov). Then, the depth ratio between tumor and normal sequences will be fitted into step functions to offset the variabilities derived from copy number variations. The overall coverage fluctuation will be measured as the mean squared deviation between the depth ratios and the fitted lines.
 ```
 Usage for bam: 1_quality_check/indexcov_read_depth.bam.sh [TUMOR_BAM] [NORMAL_BAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
 Usage for cram: 1_quality_check/indexcov_read_depth.cram.sh [TUMOR_CRAM] [NORMAL_CRAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
@@ -81,25 +81,30 @@ Usage for cram: 1_quality_check/indexcov_read_depth.cram.sh [TUMOR_CRAM] [NORMAL
 Output: [TUMOR_BAM/CRAM].depth_ratio.png
         [TUMOR_BAM/CRAM].depth.pass or [TUMOR_BAM/CRAM].depth.fail
 ```
-* ``REFERENCE_BUILD``: reference genome version (19|38)
-* ``REFERENCE_FASTA_INDEX``: /path/to/reference.fasta.fai
+#### Arguments:
+* ``REFERENCE_BUILD`` Reference genome version (19|38)
+* ``REFERENCE_FASTA_INDEX`` /path/to/reference.fasta.fai
 
 
 ## Preprocessing of input SV call sets
-Formatting SV call sets
-
 If you called SVs using DELLY, SvABA, BRASS, or dRanger, run the following command.
 ```
 Usage: Rscript 2_preprocessing/vcf_formatting.R [VCF] [CALLER] [REFERENCE_FASTA_INDEX] [OUTPUT_DIRECTORY]
 
 Output: [OUTPUT_DIRECTORY]/[VCF].sort
 ```
-* ``VCF``: 
-* ``CALLER``: 
+#### Arguments:
+* ``VCF`` SV call set obtained from DELLY, SvABA, BRASS, or dRanger
+* ``CALLER`` SV caller used to get the call set (DELLY|SvABA|BRASS|dRanger)
 
-Otherwise, transform your SV call set into the ...
-
-tab-separated 
+Otherwise, transform your SV call set into the following tab-separated format. 
+```
+CHR1	POS1	CHR2	POS2	SVTYPE	CT
+1	6435211	1	6475356	DEL	3to5
+3	2762555	3	3546843	DUP	5to3
+8	154337	8	165439	INV	3to3
+10	1293850	X	3287959	TRA	5to3	
+```
 
 ## Adjusting classification threshold
 You can adjust filtering threshold (default is 0.89 for tier1 and 0.57 for tier2)
@@ -108,31 +113,33 @@ Usage: Rscript 5_postprocessing/optional_adjusting_classification_threshold.R [O
 
 Output: [OUTPUT].sv.gremlin.[THRESHOLD].vcf
 ```
-* ``OUTPUT``: feature.dummies.pon.score
-* ``THRESHOLD``: classification threshold between 0 and 1 
+#### Arguments:
+* ``OUTPUT`` GREMLIN's output (\*.feature.dummies.pon.score)
+* ``THRESHOLD`` Classification threshold between 0 and 1 
 
 ## Retraining GREMLIN
 Before retraining the model, install required packages using `Rscript requirements.rt.R`
 
-#### 1. Re-training with your data
+### 1. Re-training with your data
 ```
 Usage: Rscript 5_postprocessing/optional_re_training.R [NEW_DATASET] [OUTPUT_DIRECTORY] [PREFIX] [PERCENT]
 
 Output: [OUTPUT_DIRECTORY]/[PREFIX]_gbm.fit.rds
 ```
-* ``NEW_DATASET``: same format with ``feature.dummies.pon.score`` with an additional column (true_label = T/F)
-* ``PERCENT``: (optional) the percent of the training set will be used for re-training; value between 0 and 100
-	                  160 training samples will be used in default
+#### Arguments:
+* ``NEW_DATASET`` Feature-annnotated call set to include for retraining GREMLIN <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Same format as \*feature.dummies.pon.score with an additional column "true_label" = T or F
+* ``PERCENT`` *(Optional)* The percent of our training set to be used for re-training (value between 0 and 100) <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;160 training samples will be used in default
 	       
-#### 2. Applying the re-trained model to your data
+### 2. Applying the re-trained model to your data
 ```
 Usage: Rscript 5_postprocessing/optional_apply_re_trained.R [OUTPUT] [re_trained_gbm.fit.rds] [THRESHOLD]
 
 Output: [OUTPUT].re_trained
 	[OUTPUT].re_trained.[THRESHOLD].vcf (if threshold is given)
 ```
-* ``OUTPUT``: feature.dummies.pon.score
-* ``THRESHOLD``: (optional) used for filtering vcf; value between 0 and 1
+#### Arguments:
+* ``OUTPUT`` GREMLIN's output (\*.feature.dummies.pon.score)
+* ``THRESHOLD`` *(Optional)* Classification threshold for SV refinement (value between 0 and 1)
 
 ## Additional filtering using normal panels of your cohort
 Cohort-specific panel of normals 
