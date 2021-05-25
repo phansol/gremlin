@@ -142,7 +142,7 @@ Output: [OUTPUT].re_trained
 * ``THRESHOLD`` *(Optional)* Classification threshold (between 0 and 1)
 
 ## Additional filtering using normal panels of your cohort
-First, generate a cohort-specific panel of normals (PoN) satisfying the following conditions.
+#### First, generate a cohort-specific panel of normals (PoN) satisfying the following conditions.
 * Column order should be (1) CHR1, (2) POS1, (3) CHR2, (4) POS2, (5) CT, (6) SVTYPE, and (7) SAMPLE_ID
 * Each line should be sorted as CHR1 <= CHR2 and POS1 <= POS2
 * Tab-separated without column names
@@ -154,7 +154,7 @@ For example,
 7	1215465	22	75212	5to3	TRA	sample_id_2
 11	4373522	11	4588301	5to5	INV	sample_id_3
 ```
-Second, annotate the PoN using the following command.
+#### Second, annotate the PoN using the following command. Then, perform additional filtering using the PoN column.
 ```
 Usage: Rscript 5_postprocessing/optional_cohort_specific_pon_annotation.R [OUTPUT] [PON] [COHORT_ID]
 
@@ -165,6 +165,5 @@ Output: [OUTPUT].pon_[COHORT_ID]
 * ``PON`` Your panel of normal dataset (generated in the step 1)
 * ``COHORT_ID`` Used for the column name of your PoN "normal_panel_\[COHORT_ID]"
 
-Then, perform additional filtering using the PoN column.
 
 ## License
