@@ -47,7 +47,7 @@ Required arguments:
 ## Best practice
 |Step|Description|
 |:--:|--|
-|1|*(Optional)* [Quality control of input sequences](https://github.com/phansol/gremlin/#quality)|
+|1|*(Optional)* [Quality control of input sequences](https://github.com/phansol/gremlin#quality)|
 |2|Preprocessing of input SV call sets|
 |3|Applying GREMLIN|
 |4|*(Optional)* Adjusting classification threshold<br>Retraining GREMLIN<br>Additional filtering using normal panels of your cohort|
