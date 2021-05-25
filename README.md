@@ -57,7 +57,7 @@ gremlin [-h] [-v VCF] [-n NORMAL_BAM] [-t TUMOR_BAM] [-r REFERENCE_FASTA]
 |1|*(Optional)* [Quality control of input sequences](#quality-control-of-input-sequences)|
 |2|[Preprocessing of input SV call sets](#preprocessing-of-input-sv-call-sets)|
 |3|[Applying GREMLIN](#usage)|
-|4|*(Optional)* [Adjusting classification threshold](#adjusting-classification-threshold)<br>[Retraining GREMLIN](#retraining-gremlin)<br>[Additional filtering using normal panels of your cohort](#additional-filtering-using-normal-panels-of-your-cohort)|
+|4|*(Optional)* [Adjusting classification threshold](#adjusting-classification-threshold)<br>*(Optional)* [Retraining GREMLIN](#retraining-gremlin)<br>*(Optional)* [Additional filtering using normal panels of your cohort](#additional-filtering-using-normal-panels-of-your-cohort)|
 
 ## Quality control of input sequences
 Short inversion artifacts and artificial fluctuations in sequencing coverage are major sources of false-positive SV calls, commonly seen in whole-genome sequences of low-quality genomic DNA. Thus, we recommend checking your sequencing data as follows before applying GREMLIN. 
@@ -142,9 +142,19 @@ Output: [OUTPUT].re_trained
 * ``THRESHOLD`` *(Optional)* Classification threshold (between 0 and 1)
 
 ## Additional filtering using normal panels of your cohort
-### 1. Generating a cohort-specific panel of normals (PoN)
+First, generate a cohort-specific panel of normals (PoN) satisfying the following conditions.
+* Column order should be **CHR1 POS1 CHR2 POS2 CT SVTYPE SAMPLE_ID**
+* Each line should be sorted as CHR1 <= CHR2 and POS1 <= POS2
+* Tab-separated without column names
 
-### 2. Annotating the PoN
+For example, 
+```
+2	648899	5	1238794	3to5	DEL	sample_id_1
+5	6876412	5	7425230	3to5	DEL	sample_id_1
+11	4373522	11	4588301	3to3	INV	sample_id_2
+12	75212	22	1215465	5to3	DUP	sample_id_3
+```
+Second, annotate the PoN using the following command.
 ```
 Usage: Rscript 5_postprocessing/optional_cohort_specific_pon_annotation.R [OUTPUT] [PON] [COHORT_ID]
 
@@ -155,6 +165,6 @@ Output: [OUTPUT].pon_[COHORT_ID]
 * ``PON`` Your panel of normal dataset (generated in the step 1)
 * ``COHORT_ID`` Used for the column name of your PoN "normal_panel_\[COHORT_ID]"
 
-Then, perform additional filtering using the 
+Then, perform additional filtering using the PoN column.
 
 ## License
