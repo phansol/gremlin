@@ -50,8 +50,8 @@ Required arguments:
 |1|*(Optional)* [Quality control of input sequences](#quality-control-of-input-sequences)|
 |2|[Preprocessing of input SV call sets](#preprocessing-of-input-sv-call-sets)|
 |3|[Applying GREMLIN](#usage)|
-|4|*(Optional)* [Adjusting classification threshold](#adjusting-classification-threshold)<br>[Retraining GREMLIN](#retraining-gremlin)<br>[Additional filtering using normal panels of your cohort](#additional-filtering-using-normal-panels-of-your-cohort)|
-
+|4|*(Optional)* [Adjusting classification threshold](#adjusting)<br>[Retraining GREMLIN](#retraining-gremlin)<br>[Additional filtering using normal panels of your cohort](#additional-filtering-using-normal-panels-of-your-cohort)|
+-classification-threshold
 ## Quality control of input sequences
 Before checking the quality of input sequencing data, install required packages using `Rscript requirements.qc.R`
 
