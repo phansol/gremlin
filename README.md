@@ -5,6 +5,13 @@ Automatically refine somatic genomic rearrangements from whole-genome sequences 
 GREMLIN was trained and verified using >200k SVs from ~1,800 cancer whole-genomes obtained from the [PCAWG](https://www.nature.com/articles/s41586-019-1913-9) and [Lee et al.](https://www.sciencedirect.com/science/article/pii/S0092867419305112) You can simply apply GREMLIN optimized for the PCAWG dataset or retrain the model with the curated SV calls from a small fraction of samples from your cohort.
 
 ## Installation
+To implement GREMLIN, python (v3.6.6), R (v3.6.0), and bedtools (v2.25.0) are required.
+
+#### Install from Bioconda
+```
+conda install -c bioconda gremlin
+```
+#### Install from GitHub
 ```
 git clone https://github.com/phansol/gremlin/gremlin.git
 cd gremlin
@@ -13,9 +20,9 @@ Rscript requirements.R
 pip install -r requirements.txt
 ```
 
-## Test run
+## Test example
 ```
-gremlin -v test/sv.vcf.sort -n test/normal.chr21.bam -t test/tumor.chr21.bam -r test/grch37.chr21.fasta
+gremlin -v test/sv.vcf.sort -n test/normal.bam -t test/tumor.bam -r test/reference.fasta
 ```
 
 ## Usage
@@ -55,7 +62,7 @@ Required arguments:
 ## Quality control of input sequences
 Before checking the quality of input sequencing data, install required packages using `Rscript requirements.qc.R`
 
-#### 1. Flag for short inversion artifacts
+#### Flag for short inversion artifacts
 Short inversion artifacts are a main source of false-positive SV calls, commonly seen in whole-genome sequences of low-quality genomic DNA. Thus, we recommend checking the fraction of short inversions in your sequencing data before applying GREMLIN. 
 
 The following command will estimate the fraction of short inversions among total read pairs using samtools. If your data has an exceptionally high fraction of short inversions, you will get a fail flag, and the refined list (GREMLIN’s output) may include many short inversion errors.
@@ -65,7 +72,7 @@ Usage: 1_quality_check/samtools_short_inv.sh [TUMOR_BAM/CRAM] [THREADS]
 Output: [TUMOR_BAM/CRAM].shinv.pass or [TUMOR_BAM/CRAM].shinv.fail
 ```
 
-#### 2. Flag for variable sequencing coverage
+#### Flag for variable sequencing coverage
 
 ```
 Usage for bam: 1_quality_check/indexcov_read_depth.bam.sh [TUMOR_BAM] [NORMAL_BAM] [OUTPUT_DIRECTORY] [REFERENCE_BUILD] [REFERENCE_FASTA_INDEX]
