@@ -65,7 +65,7 @@ Short inversion artifacts and artificial fluctuations in sequencing coverage are
 Before running the following commands, install required packages using `Rscript requirements.qc.R`
 
 ### Flag for short inversion artifacts
-The following command will estimate the fraction of short inversions among total read pairs using samtools. If your data has an exceptionally high fraction of short inversions, you will get a fail flag, and the refined list (GREMLIN’s output) may include many short inversion errors.
+The following command will estimate the fraction of short inversions among total read pairs using [samtools](http://www.htslib.org/). If your data has an exceptionally high fraction of short inversions, you will get a fail flag, and the refined list (GREMLIN’s output) may include many short inversion errors.
 ```
 Usage: 1_quality_check/samtools_short_inv.sh [TUMOR_BAM/CRAM] [THREADS]
 
@@ -115,7 +115,7 @@ Output: [OUTPUT].sv.gremlin.[THRESHOLD].vcf
 ```
 #### Arguments:
 * ``OUTPUT`` GREMLIN's output (\*.feature.dummies.pon.score)
-* ``THRESHOLD`` Classification threshold between 0 and 1 
+* ``THRESHOLD`` Classification threshold (between 0 and 1)
 
 ## Retraining GREMLIN
 Before retraining the model, install required packages using `Rscript requirements.rt.R`
@@ -128,7 +128,7 @@ Output: [OUTPUT_DIRECTORY]/[PREFIX]_gbm.fit.rds
 ```
 #### Arguments:
 * ``NEW_DATASET`` Feature-annnotated call set to include for retraining GREMLIN <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Same format as \*feature.dummies.pon.score with an additional column "true_label" = T or F
-* ``PERCENT`` *(Optional)* The percent of our training set to be used for re-training (value between 0 and 100) <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;160 training samples will be used in default
+* ``PERCENT`` *(Optional)* The percent of our training set to include for retraining (between 0 and 100) <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;160 training samples will be used in default
 	       
 ### 2. Applying the re-trained model to your data
 ```
@@ -139,9 +139,22 @@ Output: [OUTPUT].re_trained
 ```
 #### Arguments:
 * ``OUTPUT`` GREMLIN's output (\*.feature.dummies.pon.score)
-* ``THRESHOLD`` *(Optional)* Classification threshold for SV refinement (value between 0 and 1)
+* ``THRESHOLD`` *(Optional)* Classification threshold (between 0 and 1)
 
 ## Additional filtering using normal panels of your cohort
-Cohort-specific panel of normals 
+### 1. Generating a cohort-specific panel of normals (PoN)
+
+### 2. Annotating the PoN
+```
+Usage: Rscript 5_postprocessing/optional_cohort_specific_pon_annotation.R [OUTPUT] [PON] [COHORT_ID]
+
+Output: [OUTPUT].pon_[COHORT_ID]
+```
+#### Arguments:
+* ``OUTPUT`` GREMLIN's output (\*.feature.dummies.pon.score)
+* ``PON`` Your panel of normal dataset (generated in the step 1)
+* ``COHORT_ID`` Used for the column name of your PoN "normal_panel_\[COHORT_ID]"
+
+Then, perform additional filtering using the 
 
 ## License
