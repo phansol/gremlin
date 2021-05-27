@@ -160,9 +160,3 @@ Output: [OUTPUT].pon_[COHORT_ID]
 		 11	4373522	11	4588301	5to5	INV	sample_id_3
 	```
 * ``COHORT_ID`` Used for the column name of your PoN "normal_panel_\[COHORT_ID]"
-
-
-## License
-Copyright (c)
-https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/licensing-a-repository
-https://www.olis.or.kr/license/compareGuide.do
