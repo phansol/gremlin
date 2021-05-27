@@ -118,7 +118,7 @@ Output: [OUTPUT].sv.gremlin.[THRESHOLD].vcf
 * ``THRESHOLD`` Classification threshold (between 0 and 1)
 
 ## Retraining GREMLIN
-Before retraining the model, install required packages using `Rscript requirements.rt.R`
+Download our training set from [site](address) and install required packages using `Rscript requirements.rt.R`
 
 ### 1. Re-training with your data
 ```
@@ -163,3 +163,6 @@ Output: [OUTPUT].pon_[COHORT_ID]
 
 
 ## License
+Copyright (c)
+https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/licensing-a-repository
+https://www.olis.or.kr/license/compareGuide.do
