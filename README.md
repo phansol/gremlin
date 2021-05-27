@@ -32,7 +32,7 @@ gremlin [-h] [-v VCF] [-n NORMAL_BAM] [-t TUMOR_BAM] [-r REFERENCE_FASTA]
         [-c TUMOR_CELL_FRACTION] [-p TUMOR_PLOIDY] [-w WGD_STATUS] [-y TUMOR_TISSUE]
 ```
 #### Required arguments:
-* ``-v`` Structural variation call set (tab-delimited; with a header CHR1 POS1 CHR2 POS2 SVTYPE CT<br>(SVTYPE: DEL|DUP|INV|TRA, CT: 3to3|3to5|5to3|5to5)
+* ``-v`` Structural variation call set (tab-delimited; with a header CHR1 POS1 CHR2 POS2 SVTYPE CT <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(SVTYPE: DEL|DUP|INV|TRA, CT: 3to3|3to5|5to3|5to5)
 * ``-n`` Normal bam (or cram)
 * ``-t`` Tumor bam (or cram)
 * ``-r`` Reference fasta (index should be [given_fasta].fai)
@@ -98,13 +98,13 @@ Output: [OUTPUT_DIRECTORY]/[VCF].sort
 * ``CALLER`` SV caller used to get the call set (DELLY|SvABA|BRASS|dRanger)
 
 Otherwise, transform your SV call set into the following tab-separated format. 
-	```
-	CHR1	POS1	CHR2	POS2	SVTYPE	CT
+```
+(e.g.,)	CHR1	POS1	CHR2	POS2	SVTYPE	CT
 	1	6435211	1	6475356	DEL	3to5
 	3	2762555	3	3546843	DUP	5to3
 	8	154337	8	165439	INV	3to3
 	10	1293850	X	3287959	TRA	5to3	
-	```
+```
 
 ## Adjusting classification threshold
 You can adjust filtering threshold (default is 0.89 for tier1 and 0.57 for tier2)
@@ -150,15 +150,14 @@ Output: [OUTPUT].pon_[COHORT_ID]
 #### Arguments:
 * ``OUTPUT`` GREMLIN's output (\*.feature.dummies.pon.score)
 * ``PON`` Your panel of normal data satisfying the following conditions <br>
-	* Column order should be (1) CHR1, (2) POS1, (3) CHR2, (4) POS2, (5) CT, (6) SVTYPE, and (7) SAMPLE_ID <br>
-	* Each line should be sorted as CHR1 <= CHR2 and POS1 <= POS2 <br>
-	* Tab-separated without column names <br>
-	For example,
+	- Column order should be (1) CHR1, (2) POS1, (3) CHR2, (4) POS2, (5) CT, (6) SVTYPE, and (7) SAMPLE_ID <br>
+	- Each line should be sorted as CHR1 <= CHR2 and POS1 <= POS2 <br>
+	- Tab-separated without column names <br>
 	```
-	2	648899	2	1238794	3to5	DEL	sample_id_1
-	5	6876412	5	7425230	3to5	DEL	sample_id_1
-	7	1215465	22	75212	5to3	TRA	sample_id_2
-	11	4373522	11	4588301	5to5	INV	sample_id_3
+	(e.g.,) 2	648899	2	1238794	3to5	DEL	sample_id_1
+		 5	6876412	5	7425230	3to5	DEL	sample_id_1
+		 7	1215465	22	75212	5to3	TRA	sample_id_2
+		 11	4373522	11	4588301	5to5	INV	sample_id_3
 	```
 * ``COHORT_ID`` Used for the column name of your PoN "normal_panel_\[COHORT_ID]"
 
