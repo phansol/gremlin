@@ -7,11 +7,11 @@ GREMLIN was trained and verified using >200k SVs from ~1,800 cancer whole-genome
 ## Installation
 To implement GREMLIN, python (v3.6.6), R (v3.6.0), and bedtools (v2.25.0) are required.
 
-### Install from Bioconda
+### (X) Install from Bioconda
 ```
 conda install -c bioconda gremlin
 ```
-### Install from GitHub
+### (X) Install from GitHub
 ```
 git clone https://github.com/phansol/gremlin/gremlin.git
 cd gremlin
@@ -20,7 +20,7 @@ Rscript requirements.R
 pip install -r requirements.txt
 ```
 
-## Test example
+## (X) Test example
 ```
 gremlin -v test/sv.vcf.sort -n test/normal.bam -t test/tumor.bam -r test/reference.fasta
 ```
