@@ -5,9 +5,12 @@ Automatically refine somatic genomic rearrangements from whole-genome sequences 
 GREMLIN was trained and verified using >200k SVs from 1,802 cancer whole-genomes obtained from the [PCAWG](https://www.nature.com/articles/s41586-019-1913-9) and [Lee et al.](https://www.sciencedirect.com/science/article/pii/S0092867419305112) You can simply apply GREMLIN optimized for the PCAWG dataset or retrain the model with the curated SV calls from a small fraction of samples from your cohort.
 
 ## Installation
-To implement GREMLIN, python (v3.6.6), R (v3.6.0), and bedtools (v2.25.0) are required.
+GREMLIN can be implemented as a [Docker image](https://hub.docker.com/repository/docker/kcml2/gremlin-base) by running the command `docker pull kcml2/gremlin-base`.<br>
 
 ### Install from GitHub
+To implement GREMLIN, python (v3.6.6), R (v3.6.0), and bedtools (v2.25.0) are required.
+
+First, clone the source files from GitHub and install required packages.
 ```
 git clone https://github.com/phansol/gremlin.git
 cd gremlin
@@ -15,10 +18,13 @@ cd gremlin
 Rscript requirements.R
 pip install -r requirements.txt
 ```
+Then, download the following files from [here](ftp_server_address).
+- Download `pon_19.tar.gz` or `pon_38.tar.gz` (for hg19 and hg38 reference genome, respectively) to gremlin/3_feature_extraction and decompress the tar.gz file.
+- Download `gremlin_gbm.fit.rds` to gremlin/4_classification.
 
 ## Usage
 ```
-gremlin [-h] [-v VCF] [-n NORMAL_BAM] [-t TUMOR_BAM] [-r REFERENCE_FASTA]
+gremlin [-h] [-v CALL_SET] [-n NORMAL_BAM] [-t TUMOR_BAM] [-r REFERENCE_FASTA]
         [-i SAMPLE_ID] [-o OUTPUT_DIRECTORY] [-g REFERENCE_VERSION]
         [-c TUMOR_CELL_FRACTION] [-p TUMOR_PLOIDY] [-w WGD_STATUS] [-y TUMOR_TISSUE]
 ```
@@ -27,8 +33,8 @@ gremlin [-h] [-v VCF] [-n NORMAL_BAM] [-t TUMOR_BAM] [-r REFERENCE_FASTA]
 * ``-n`` Normal bam (or cram)
 * ``-t`` Tumor bam (or cram)
 * ``-r`` Reference fasta (index should be [given_fasta].fai)
-* ``-i`` Sample ID [default: basename of input vcf]
-* ``-o`` Output directory [default: directory of input vcf]
+* ``-i`` Sample ID [default: basename of input call set]
+* ``-o`` Output directory [default: directory of input call set]
 * ``-g`` Reference version (19|38) [default: 19]
 * ``-c`` Tumor cell fraction [default: 0.5]
 * ``-p`` Tumor genome ploidy [default: 2]
@@ -85,7 +91,7 @@ Usage: Rscript 2_preprocessing/vcf_formatting.R [VCF] [CALLER] [REFERENCE_FASTA_
 Output: [OUTPUT_DIRECTORY]/[VCF].sort
 ```
 #### Arguments:
-* ``VCF`` SV call set obtained from DELLY, SvABA, BRASS, or dRanger
+* ``VCF`` VCF file obtained from DELLY, SvABA, BRASS, or dRanger
 * ``CALLER`` SV caller used to get the call set (DELLY|SvABA|BRASS|dRanger)
 
 Otherwise, transform your SV call set into the following tab-separated format. 
@@ -109,7 +115,7 @@ Output: [OUTPUT].sv.gremlin.[THRESHOLD].vcf
 * ``THRESHOLD`` Classification threshold (between 0 and 1)
 
 ## Retraining GREMLIN
-Download our training set from [site](address) and install required packages using `Rscript requirements.rt.R`
+Download our training set from [here](ftp_server_address) and install required packages using `Rscript requirements.rt.R`
 
 ### 1. Re-training with your data
 ```
