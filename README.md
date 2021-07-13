@@ -2,27 +2,18 @@
 
 Automatically refine somatic genomic rearrangements from whole-genome sequences of tumor and matched normal tissues. GREMLIN takes a SV call set as an input and extracts features from the whole-genome bam (or cram). Then, it scores each of the calls and outputs a refined SV list.
 
-GREMLIN was trained and verified using >200k SVs from ~1,800 cancer whole-genomes obtained from the [PCAWG](https://www.nature.com/articles/s41586-019-1913-9) and [Lee et al.](https://www.sciencedirect.com/science/article/pii/S0092867419305112) You can simply apply GREMLIN optimized for the PCAWG dataset or retrain the model with the curated SV calls from a small fraction of samples from your cohort.
+GREMLIN was trained and verified using >200k SVs from 1,802 cancer whole-genomes obtained from the [PCAWG](https://www.nature.com/articles/s41586-019-1913-9) and [Lee et al.](https://www.sciencedirect.com/science/article/pii/S0092867419305112) You can simply apply GREMLIN optimized for the PCAWG dataset or retrain the model with the curated SV calls from a small fraction of samples from your cohort.
 
 ## Installation
 To implement GREMLIN, python (v3.6.6), R (v3.6.0), and bedtools (v2.25.0) are required.
 
-### (X) Install from Bioconda
+### Install from GitHub
 ```
-conda install -c bioconda gremlin
-```
-### (X) Install from GitHub
-```
-git clone https://github.com/phansol/gremlin/gremlin.git
+git clone https://github.com/phansol/gremlin.git
 cd gremlin
 
 Rscript requirements.R
 pip install -r requirements.txt
-```
-
-## (X) Test example
-```
-gremlin -v test/sv.vcf.sort -n test/normal.bam -t test/tumor.bam -r test/reference.fasta
 ```
 
 ## Usage
