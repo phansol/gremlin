@@ -1,6 +1,11 @@
 # GREMLIN: Genomic REarrangements by Machine Learning-based INspection
 
-Automatically refine somatic genomic rearrangements from whole-genome sequences of tumor and matched normal tissues. GREMLIN takes a SV call set as an input and extracts features from the whole-genome bam (or cram). Then, it scores each of the calls and outputs a refined SV list.
+### Machine learning-based detection of structural variations in human cancer genomes
+
+#### Hansol Park, Seongyeol Park, Ji-Hyung Park, Jeonghwan Youk, Kwihoon Kim, Su Yeon Kim, and Young Seok Ju
+
+
+GREMLIN automatically refines somatic structural variations (SVs) from whole-genome sequences of tumor and matched normal tissues. GREMLIN takes a SV call set as an input and extracts features from the whole-genome bam (or cram). Then, it scores each of the calls and outputs a refined SV list.
 
 GREMLIN was trained and verified using >200k SVs from 1,802 cancer whole-genomes obtained from the [PCAWG](https://www.nature.com/articles/s41586-019-1913-9) and [Lee et al.](https://www.sciencedirect.com/science/article/pii/S0092867419305112) You can simply apply GREMLIN optimized for the PCAWG dataset or retrain the model with the curated SV calls from a small fraction of samples from your cohort.
 
