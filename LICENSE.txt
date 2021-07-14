@@ -1,3 +1,0 @@
-Copyright (c)
-https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/licensing-a-repository
-https://www.olis.or.kr/license/compareGuide.do
