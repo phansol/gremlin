@@ -3,7 +3,7 @@
 
 ### Machine learning-based detection of structural variations in human cancer genomes
 
-#### Hansol Park, Seongyeol Park, Ji-Hyung Park, Jeonghwan Youk, Kwihoon KimCancel changes, Su Yeon Kim, and Young Seok Ju
+#### Hansol Park, Seongyeol Park, Ji-Hyung Park, Jeonghwan Youk, Kwihoon Kim, Su Yeon Kim, and Young Seok Ju
 
 
 GREMLIN automatically refines somatic structural variations (SVs) from whole-genome sequences of tumor and matched normal tissues. GREMLIN takes a SV call set as an input and extracts features from the whole-genome bam (or cram). Then, it scores each of the calls and outputs a refined SV list.
