@@ -110,7 +110,7 @@ Otherwise, transform your SV call set into the following tab-separated format.
 ```
 
 ## Adjusting classification threshold
-You can adjust filtering threshold (default is 0.89 for tier1 and 0.57 for tier2)
+You can adjust the filtering threshold (default is 0.89 for tier1 and 0.57 for tier2)
 ```
 Usage: Rscript 5_postprocessing/optional_adjusting_classification_threshold.R [OUTPUT] [THRESHOLD]
 
@@ -123,17 +123,17 @@ Output: [OUTPUT].sv.gremlin.[THRESHOLD].vcf
 ## Retraining GREMLIN
 Download our training set from [here](ftp_server_address) and install required packages using `Rscript requirements.rt.R`
 
-### 1. Re-training with your data
+### 1. Retraining with your data
 ```
 Usage: Rscript 5_postprocessing/optional_re_training.R [NEW_DATASET] [OUTPUT_DIRECTORY] [PREFIX] [PERCENT]
 
 Output: [OUTPUT_DIRECTORY]/[PREFIX]_gbm.fit.rds
 ```
 #### Arguments:
-* ``NEW_DATASET`` Feature-annnotated call set to include for retraining GREMLIN <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Same format as \*feature.dummies.pon.score with an additional column "true_label" = T or F
-* ``PERCENT`` *(Optional)* The percent of our training set to include for retraining (between 0 and 100) <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;160 training samples will be used in default
+* ``NEW_DATASET`` Feature-annotated call set to include for retraining GREMLIN <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Same format as \*feature.dummies.pon.score with an additional column "true_label" = T or F
+* ``PERCENT`` *(Optional)* The percent of our training set to be included in model retraining (between 0 and 100) <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;160 training samples will be used in default
 	       
-### 2. Applying the re-trained model to your data
+### 2. Applying the retrained model to your data
 ```
 Usage: Rscript 5_postprocessing/optional_apply_re_trained.R [OUTPUT] [re_trained_gbm.fit.rds] [THRESHOLD]
 
