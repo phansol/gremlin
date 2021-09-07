@@ -1,0 +1,133 @@
+#!/usr/bin/sh
+usage="Usage: 	gremlin [-h] [-v CALL_SET] [-n NORMAL_BAM] [-t TUMOR_BAM] [-r REFERENCE_FASTA] 
+		[-i SAMPLE_ID] [-o OUTPUT_DIRECTORY] [-g REFERENCE_VERSION] 
+		[-c TUMOR_CELL_FRACTION] [-p TUMOR_PLOIDY] [-w WGD_STATUS] [-y TUMOR_TISSUE]
+
+GREMLIN (Genomic REarrangements by Machine Learning-based INspection)
+This pipeline refines somatic structural variations after extracting features 
+from tumor/normal whole-genomes.
+
+Required arguments:
+  -v	Structural variation call set (tab-delimited; with a header CHR1 POS1 CHR2 POS2 SVTYPE CT
+  	(SVTYPE: DEL|DUP|INV|TRA, CT: 3to3|3to5|5to3|5to5)
+  -n	Normal bam (or cram)
+  -t	Tumor bam (or cram)
+  -r	Reference fasta (index should be [given_fasta].fai)
+  -i	Sample ID					[default: basename of input callset]
+  -o	Output directory				[default: directory of input callset]
+  -g	Reference version (19|38)			[default: 19]
+  -c	Tumor cell fraction				[default: 0.5]
+  -p	Tumor genome ploidy				[default: 2]
+  -w	Whole-genome duplication status (wgd|no_wgd)	[default: no_wgd]
+  -y	Tumor tissue					[default: Biliary]
+  	(Biliary|Bladder|Bone_SoftTissue|Breast|Cervix|
+	CNS|Colon_Rectum|Esophagus|Head_Neck|Hematologic|
+	Kideny|Liver|Lung|Ovary|Pancreas|Prostate|Skin|
+	Stomach|Thyroid|Uterus)"
+set -e 
+
+# arguments
+refVersion=19
+purity=0.5
+ploidy=2
+wgd=no_wgd
+histology=Biliary
+
+while getopts "ho:v:i:n:t:r:g:c:p:w:y:" opt; do
+    case $opt in
+      h) echo "$usage"
+         exit 0;;
+      o) outDir=$OPTARG;;
+      v) callset=$OPTARG;;
+      i) sampleName=$OPTARG;;
+      n) normalBam=$OPTARG;;
+      t) tumorBam=$OPTARG;;
+      r) reference=$OPTARG;;
+      g) refVersion=$OPTARG;;
+      c) purity=$OPTARG;;
+      p) ploidy=$OPTARG;;
+      w) wgd=$OPTARG;;
+      y) histology=$OPTARG;;
+      *) echo "$usage"
+         exit 1;;
+    esac
+done
+
+if [[ $outDir = '' ]]; then
+    outDir=$(dirname $callset)
+fi
+if [[ $sampleName = '' ]]; then
+    sampleName=$(basename $callset)
+fi
+
+echo -e "gremlin -v $callset \ \n\t-n $normalBam \ \n\t-t $tumorBam \ \n\t-r $reference \ \n\t-i $sampleName \ \n\t-o $outDir \ \n\t-g $refVersion \ \n\t-c $purity \ \n\t-p $ploidy \ \n\t-w $wgd \ \n\t-y $histology \n"
+
+# feature extraction + variant refinement
+mainDir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+srcDir=$mainDir/codes/3_feature_extraction
+modelDir=$mainDir/codes/4_classification
+tmpDir=$outDir/$sampleName.tmp
+logDir=$tmpDir/log
+mkdir -p $logDir $tmpDir
+
+echo "Intermediate files will be temporarily saved in $tmpDir"
+echo "Log files will be temporarily saved in $logDir"
+echo -e "\nStarting feature extraction..."
+echo "|step-1|------step-2------|--step-3--|--step-4--|--step-5--|----step-6----|"
+
+# STEP 1: extract features near SV breakpoints
+python $srcDir/1_SV_info.py $callset $tumorBam $normalBam $reference.fai $refVersion &> $logDir/$sampleName.s1.log
+mv $callset.SVinfo $tmpDir/$sampleName.gremlin.sort.SVinfo
+mv $logDir/$sampleName.s1.log $logDir/$sampleName.s1.success
+echo -n "|******"
+
+# STEP 2: remove duplicates & prefilter
+Rscript $srcDir/2_rmdup_prefilter.R $tmpDir/$sampleName.gremlin.sort.SVinfo &> $logDir/$sampleName.s2.log
+mv $logDir/$sampleName.s2.log $logDir/$sampleName.s2.success
+echo -n "|******************"
+
+if [ ! -f $logDir/$sampleName.s2.job.finished ]; then
+
+    # STEP 3: % of gc contents & masked
+    Rscript $srcDir/3_1_bedtools_getfasta.R $tmpDir/$sampleName.gremlin.sort.SVinfo.fi $reference.fai &> $logDir/$sampleName.s3.log
+    (bedtools getfasta -tab -fi $reference -bed $tmpDir/$sampleName.gremlin.sort.SVinfo.fi.bed1 -fo $tmpDir/$sampleName.gremlin.sort.SVinfo.fi.bed1.seq) &>> $logDir/$sampleName.s3.log
+    (bedtools getfasta -tab -fi $reference -bed $tmpDir/$sampleName.gremlin.sort.SVinfo.fi.bed2 -fo $tmpDir/$sampleName.gremlin.sort.SVinfo.fi.bed2.seq) &>> $logDir/$sampleName.s3.log
+    Rscript $srcDir/3_2_annot_gc_and_softmask.R $tmpDir/$sampleName.gremlin.sort.SVinfo.fi.bed1.seq $tmpDir/$sampleName.gremlin.sort.SVinfo.fi.bed2.seq $tmpDir/$sampleName.gremlin.sort.SVinfo.fi &>> $logDir/$sampleName.s3.log
+    mv $logDir/$sampleName.s3.log $logDir/$sampleName.s3.success
+    echo -n "|**********"
+
+    # STEP 4: feature matrix
+    Rscript $srcDir/4_transform_to_feature_matrix.R $tmpDir/$sampleName.gremlin.sort.SVinfo.fi.gc_mask $purity $ploidy $wgd $histology &> $logDir/$sampleName.s4.log
+    mv $logDir/$sampleName.s4.log $logDir/$sampleName.s4.success
+    echo -n "|**********"
+
+    # STEP 5: to dummy variables
+    matrix=$tmpDir/$sampleName.gremlin.feature
+    Rscript $srcDir/5_to_dummies.R $matrix &> $logDir/$sampleName.s5.log
+    mv $logDir/$sampleName.s5.log $logDir/$sampleName.s5.success
+    echo -n "|**********"
+
+    # STEP 6: panel of normals
+    if [[ $refVersion == 19 ]]; then
+        pon_path=$mainDir/data/panel_of_normal/hg19
+    fi
+    if [[ $refVersion == 38 ]]; then
+        pon_path=$mainDir/data/panel_of_normal/hg38
+    fi
+    Rscript $srcDir/6_pon_annotation.R $matrix.dummies $pon_path &> $logDir/$sampleName.s6.log
+    mv $logDir/$sampleName.s6.log $logDir/$sampleName.s6.success
+    echo -n "|**************|"
+
+    # STEP 7: apply Gremlins
+    echo -e "\n\nStarting variant refinement using GREMLIN..."
+    Rscript $modelDir/apply_gremlins.R $matrix.dummies.pon &> $logDir/$sampleName.s7.log
+    mv $logDir/$sampleName.s7.log $logDir/$sampleName.s7.success
+
+    # Clear
+    echo -e "Done!\n\nRemove temporary files in $tmpDir"
+    rm -r $tmpDir
+
+    echo -e "\nOutputs: $outDir/$sampleName.gremlin.somatic.svs.tier1.tsv"
+    echo -e "\t$outDir/$sampleName.gremlin.somatic.svs.tier2.tsv\n\t$outDir/$sampleName.gremlin.feature.dummies.pon.score"
+ 
+fi
