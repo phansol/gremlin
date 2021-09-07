@@ -27,7 +27,7 @@ GREMLIN depends on the following python and R packages.
 
 ## Installation
 
-First, clone the source files from GitHub and install required packages. Installation takes ~# minutes on a standard computer. 
+First, clone the source files from GitHub and install the required packages. 
 ```
 git clone https://github.com/phansol/gremlin.git
 cd gremlin/
