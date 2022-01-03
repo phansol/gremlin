@@ -30,10 +30,6 @@ GREMLIN depends on the following python and R packages.
 First, clone the source files from GitHub and install the required packages. 
 ```
 git clone https://github.com/phansol/gremlin.git
-cd gremlin/
-
-Rscript codes/requirements.R
-pip install -r codes/requirements.txt
 ```
 Then, download `gremlin.fit.rds` and `data.tar.xz` (should be decompressed before use) from [here](ftp_server_address) to `gremlin/`
 
@@ -49,11 +45,14 @@ gremlin [-h] [-v CALL_SET] [-n NORMAL_BAM] [-t TUMOR_BAM] [-r REFERENCE_FASTA]
         [-i SAMPLE_ID] [-o OUTPUT_DIRECTORY] [-g REFERENCE_VERSION]
         [-c TUMOR_CELL_FRACTION] [-p TUMOR_PLOIDY] [-w WGD_STATUS] [-y TUMOR_TISSUE]
 ```
-#### Required arguments:
+#### Arguments:
+##### &nbsp;&nbsp;&nbsp; (Required)
 * ``-v`` Structural variation call set (tab-delimited; with a header CHR1 POS1 CHR2 POS2 SVTYPE CT <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(SVTYPE: DEL|DUP|INV|TRA, CT: 3to3|3to5|5to3|5to5)
 * ``-n`` Normal bam (or cram)
 * ``-t`` Tumor bam (or cram)
 * ``-r`` Reference fasta (index should be [given_fasta].fai)
+
+##### &nbsp;&nbsp;&nbsp; (Optional)
 * ``-i`` Sample ID [default: basename of input call set]
 * ``-o`` Output directory [default: directory of input call set]
 * ``-g`` Reference version (19|38) [default: 19]
@@ -62,7 +61,7 @@ gremlin [-h] [-v CALL_SET] [-n NORMAL_BAM] [-t TUMOR_BAM] [-r REFERENCE_FASTA]
 * ``-w`` Whole-genome duplication status (wgd|no_wgd) [default: no_wgd]
 * ``-y`` Tumor tissue (Biliary|Bladder|Bone_SoftTissue|Breast|Cervix|CNS|Colon_Rectum|Esophagus|Head_Neck|<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hematologic|Kideny|Liver|Lung|Ovary|Pancreas|Prostate|Skin|Stomach|Thyroid|Uterus) [default: Biliary] 
 
-#### Output
+#### Output:
 * ``[OUTPUT_DIRECTORY]/[SAMPLE_ID].gremlin.feature.dummies.pon.score``: scored SV call set
 
 * ``[OUTPUT_DIRECTORY]/[SAMPLE_ID].gremlin.somatic.svs.tier1.tsv``: tier1 SV calls predicted to be true somatic mutations by GREMLIN
