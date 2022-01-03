@@ -85,8 +85,8 @@ echo -e "\nStarting feature extraction..."
 echo "|step-1|------step-2------|--step-3--|--step-4--|--step-5--|----step-6----|"
 
 # Package requirements
-$Rscript $mainDir/codes/requirements.R
-pip install -r codes/requirements.txt
+$Rscript $mainDir/codes/requirements.R &> /dev/null
+pip install -r codes/requirements.txt &> /dev/null
 
 # STEP 1: extract features near SV breakpoints
 python $srcDir/1_SV_info.py $callset $tumorBam $normalBam $reference.fai $refVersion &> $logDir/$sampleName.s1.log
